@@ -15,7 +15,7 @@ CREATE TABLE Items(
     Started TEXT NOT NULL,
     Ends TEXT NOT NULL,
     SellerID INTEGER NOT NULL,
-    Description TEXT MOT NULL,
+    Description TEXT NOT NULL,
     PRIMARY KEY (ItemID),
     FOREIGN KEY (SellerID) REFERENCES Sellers
 );
