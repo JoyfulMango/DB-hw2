@@ -68,9 +68,12 @@ def transformDollar(money):
     return sub(r'[^\d.]', '', money)
 
 def doesExist(obj, key, replace):
-    get = obj.get(key) if obj.get(key) is not None else replace
+    get = obj.get(key) if obj.get(key, replace) is not None else replace
     return get
 
+seller_exists = set()
+bidder_exists = set()
+user_exists = set()
 """
 Parses a single json file. Currently, there's a loop that iterates over each
 item in the data set. Your job is to extend this functionality to create all
@@ -78,19 +81,17 @@ of the necessary SQL tables for your database.
 """
 def parseJson(json_file):
 
-    items_table = open('items.dat', 'w')
-    users_table = open('users.dat', 'w')
-    bids_table = open('bids.dat', 'w')
-    category_table = open('category.dat', 'w')
-    bidders_table = open('bidders.dat', 'w')
-    sellers_table = open('sellers.dat', 'w')
-
-    user_exists = set()
-    seller_exists = set()
-    bidder_exists = set()
-
+    items_table = open('items.dat', 'a')
+    users_table = open('users.dat', 'a')
+    bids_table = open('bids.dat', 'a')
+    category_table = open('categories.dat', 'a')
+    bidders_table = open('bidders.dat', 'a')
+    sellers_table = open('sellers.dat', 'a')
 
     with open(json_file, 'r') as f:
+        global seller_exists
+        global bidder_exists
+        global user_exists
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
         for item in items:
             """
@@ -122,12 +123,12 @@ def parseJson(json_file):
                 bidder_country = doesExist(bidder, "Country", "NULL")
                 bidder_rating = doesExist(bidder, "Rating", "NULL")
 
-                user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
-                if user not in user_exists:
+                user = f"{bidder_id}{columnSeparator}{bidder_rating}\n"
+                if not (user in user_exists):
                     user_exists.add(user)
                     users_table.write(user)
 
-                bidder = f"{bidder_id}\n"
+                bidder = f"{bidder_id}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
                 if bidder not in bidder_exists:
                     bidder_exists.add(bidder)
                     bidders_table.write(bidder)
@@ -145,17 +146,19 @@ def parseJson(json_file):
 
             items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}
                               {buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}
-                              {start_date}{columnSeparator}{end_date}{columnSeparator}{description}{columnSeparator}{seller_id}\n""")
+                              {start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}{columnSeparator}\n""")
 
-            user = f"{seller_id}{columnSeparator}{seller_rating}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n"
-            if user not in user_exists:
+            user = f"{seller_id}{columnSeparator}{seller_rating}\n"
+            if not (user in user_exists):
                 user_exists.add(user)
                 users_table.write(user)
 
-            seller = f"{seller_id}\n"
+            seller = f"{seller_id}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n"
             if seller not in seller_exists:
                 seller_exists.add(seller)
                 sellers_table.write(seller)
+    
+    print(len(user_exists))
 
 """
 Loops through each json files provided on the command line and passes each file
