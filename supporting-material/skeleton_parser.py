@@ -81,6 +81,8 @@ def parseJson(json_file):
     bidders_table = open('bidders.dat', 'a')
     sellers_table = open('sellers.dat', 'a')
 
+    user_exists = set()
+
     with open(json_file, 'r') as f:
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
         for item in items:
@@ -112,6 +114,13 @@ def parseJson(json_file):
             for bid in bids:
                 bidder = bid["Bid"]["Bidder"]
                 bidder_id = bidder["UserID"]
+                bidder_location = bidder["Location"]
+                bidder_country = bidder["Country"]
+                bidder_rating = bidder["Rating"]
+                user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
+                if user not in user_exists:
+                    user_exists.add(user)
+                    users_table.write(user)
                 bidder_time = transformDttm(bidder["Time"])
                 bidder_amount = transformDollar(bidder["Amount"])
                 bids_table.write(f"{bidder_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
@@ -129,7 +138,15 @@ def parseJson(json_file):
 
             break
 
-def dupeDetect(table, properties)
+def dupeDetect(table, properties):
+    dupe = True
+    exists = set()
+    for line in table:
+        exists.add(line)
+    if properties not in exists:
+        exists
+
+    
 
 """
 Loops through each json files provided on the command line and passes each file
