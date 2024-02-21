@@ -67,6 +67,10 @@ def transformDollar(money):
         return money
     return sub(r'[^\d.]', '', money)
 
+def doesExist(obj, key, replace):
+    get = obj.get(key) if obj.get(key) is not None else replace
+    return get
+
 """
 Parses a single json file. Currently, there's a loop that iterates over each
 item in the data set. Your job is to extend this functionality to create all
@@ -74,18 +78,17 @@ of the necessary SQL tables for your database.
 """
 def parseJson(json_file):
 
-    items_table = open('items.txt', 'a')
-    users_table = open('users.dat', 'a')
-    bids_table = open('bids.dat', 'a')
-    category_table = open('category.dat', 'a')
-    bidders_table = open('bidders.dat', 'a')
-    sellers_table = open('sellers.dat', 'a')
+    items_table = open('items.dat', 'w')
+    users_table = open('users.dat', 'w')
+    bids_table = open('bids.dat', 'w')
+    category_table = open('category.dat', 'w')
+    bidders_table = open('bidders.dat', 'w')
+    sellers_table = open('sellers.dat', 'w')
 
     user_exists = set()
     seller_exists = set()
     bidder_exists = set()
 
-    print('hi')
 
     with open(json_file, 'r') as f:
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
@@ -97,27 +100,27 @@ def parseJson(json_file):
             """
 
             item_id = item["ItemID"]
-            name = item["Name"].replace('"', '""')
-            currently = transformDollar(item["Currently"])
-            buy_price = transformDollar(item.get("Buy_Price", "NULL"))
-            first_bid = transformDollar(item["First_Bid"])
-            number_of_bids = item["Number_of_Bids"]
-            start_date = transformDttm(item["Started"])
-            end_date = transformDttm(item["Ends"])
-            description = item["Description"].replace('"', '""')
+            name = doesExist(item, "Name", "NULL").replace('"', '""')
+            currently = transformDollar(doesExist(item, "Currently", "NULL"))
+            buy_price = transformDollar(doesExist(item, "Buy_Price", "NULL"))
+            first_bid = transformDollar(doesExist(item, "First_Bid", "NULL"))
+            number_of_bids = doesExist(item, "Number_of_Bids", "NULL")
+            start_date = transformDttm(doesExist(item, "Started", "NULL"))
+            end_date = transformDttm(doesExist(item, "Ends", "NULL"))
+            description = doesExist(item, "Description", "NULL").replace('"', '""')
             
-            categories = item["Category"]
+            categories = doesExist(item, "Category", "NULL")
             
             for category in categories:
                 category_table.write(f"{item_id}{columnSeparator}{category}\n")
-
-            bids = item.get("Bids", [])
+            bids = doesExist(item, "Bids", [])
             for bid in bids:
-                bidder = bid["Bid"]["Bidder"]
-                bidder_id = bidder["UserID"]
-                bidder_location = bidder["Location"]
-                bidder_country = bidder["Country"]
-                bidder_rating = bidder["Rating"]
+                bidder = doesExist(doesExist(bid, "Bid", "NULL"), "Bidder", "NULL")
+                bidder_id = doesExist(bidder, "UserID", "NULL")
+                bidder_location = doesExist(bidder, "Location", "NULL")
+                #print(bidder_id, bidder_location)
+                bidder_country = doesExist(bidder, "Country", "NULL")
+                bidder_rating = doesExist(bidder, "Rating", "NULL")
 
                 user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
                 if user not in user_exists:
@@ -129,16 +132,16 @@ def parseJson(json_file):
                     bidder_exists.add(bidder)
                     bidders_table.write(bidder)
 
-                bidder_time = transformDttm(bidder["Time"])
-                bidder_amount = transformDollar(bidder["Amount"])
-                bids_table.write(f"{bidder_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
+                bidder_time = transformDttm(doesExist(doesExist(bid, "Bid", "NULL"), "Time", "NULL"))
+                bidder_amount = transformDollar(doesExist(doesExist(bid, "Bid", "NULL"), "Amount", "NULL"))
+                bids_table.write(f"{bidder_id}{columnSeparator}{item_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
 
-            sellers = item.get("Seller", [])
-            seller_location = item["Location"]
-            seller_country = item["Country"]
+            sellers = doesExist(item, "Seller", "NULL")
+            seller_location = doesExist(item, "Location", "NULL")
+            seller_country = doesExist(item, "Country", "NULL")
             
-            seller_id = sellers["UserID"]
-            seller_rating = sellers["Rating"]
+            seller_id = doesExist(sellers, "UserID", "NULL")
+            seller_rating = doesExist(sellers, "Rating", "NULL")
 
             items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}
                               {buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}
@@ -153,17 +156,12 @@ def parseJson(json_file):
             if seller not in seller_exists:
                 seller_exists.add(seller)
                 sellers_table.write(seller)
-            
-
-
-            break    
 
 """
 Loops through each json files provided on the command line and passes each file
 to the parser
 """
 def main(argv):
-    print('hi')
     if len(argv) < 2:
         print ('Usage: python skeleton_json_parser.py <path to json files>', file=sys.stderr)
         sys.exit(1)
@@ -174,6 +172,5 @@ def main(argv):
             parseJson(f)
             print ("Success parsing ", f)
 
-if __name__ == '_main_':
-    print('hi')
+if __name__ == '__main__':
     main(sys.argv)
