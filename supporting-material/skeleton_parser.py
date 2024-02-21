@@ -74,7 +74,7 @@ of the necessary SQL tables for your database.
 """
 def parseJson(json_file):
 
-    items_table = open('items.dat', 'a')
+    items_table = open('items.txt', 'a')
     users_table = open('users.dat', 'a')
     bids_table = open('bids.dat', 'a')
     category_table = open('category.dat', 'a')
@@ -82,6 +82,10 @@ def parseJson(json_file):
     sellers_table = open('sellers.dat', 'a')
 
     user_exists = set()
+    seller_exists = set()
+    bidder_exists = set()
+
+    print('hi')
 
     with open(json_file, 'r') as f:
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
@@ -100,10 +104,7 @@ def parseJson(json_file):
             number_of_bids = item["Number_of_Bids"]
             start_date = transformDttm(item["Started"])
             end_date = transformDttm(item["Ends"])
-            description = item["Description"]
-            items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}
-                              {buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}
-                              {start_date}{columnSeparator}{end_date}{columnSeparator}{description}\n""")
+            description = item["Description"].replace('"', '""')
             
             categories = item["Category"]
             
@@ -117,10 +118,17 @@ def parseJson(json_file):
                 bidder_location = bidder["Location"]
                 bidder_country = bidder["Country"]
                 bidder_rating = bidder["Rating"]
+
                 user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
                 if user not in user_exists:
                     user_exists.add(user)
                     users_table.write(user)
+
+                bidder = f"{bidder_id}\n"
+                if bidder not in bidder_exists:
+                    bidder_exists.add(bidder)
+                    bidders_table.write(bidder)
+
                 bidder_time = transformDttm(bidder["Time"])
                 bidder_amount = transformDollar(bidder["Amount"])
                 bids_table.write(f"{bidder_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
@@ -128,39 +136,44 @@ def parseJson(json_file):
             sellers = item.get("Seller", [])
             seller_location = item["Location"]
             seller_country = item["Country"]
-            for seller in sellers:
-                seller_id = seller["UserID"]
-                users_table.write(f"{seller_id}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n")
-                seller_rating = seller["Rating"]
-                sellers_table.write(f"{item_id}{columnSeparator}{seller_id}{columnSeparator}{seller_rating}\n")
+            
+            seller_id = sellers["UserID"]
+            seller_rating = sellers["Rating"]
+
+            items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}
+                              {buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}
+                              {start_date}{columnSeparator}{end_date}{columnSeparator}{description}{columnSeparator}{seller_id}\n""")
+
+            user = f"{seller_id}{columnSeparator}{seller_rating}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n"
+            if user not in user_exists:
+                user_exists.add(user)
+                users_table.write(user)
+
+            seller = f"{seller_id}\n"
+            if seller not in seller_exists:
+                seller_exists.add(seller)
+                sellers_table.write(seller)
             
 
 
-            break
-
-def dupeDetect(table, properties):
-    dupe = True
-    exists = set()
-    for line in table:
-        exists.add(line)
-    if properties not in exists:
-        exists
-
-    
+            break    
 
 """
 Loops through each json files provided on the command line and passes each file
 to the parser
 """
 def main(argv):
+    print('hi')
     if len(argv) < 2:
         print ('Usage: python skeleton_json_parser.py <path to json files>', file=sys.stderr)
         sys.exit(1)
     # loops over all .json files in the argument
     for f in argv[1:]:
+        print(isJson(f))
         if isJson(f):
             parseJson(f)
             print ("Success parsing ", f)
 
-if _name_ == '_main_':
+if __name__ == '_main_':
+    print('hi')
     main(sys.argv)
