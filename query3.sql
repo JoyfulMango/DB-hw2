@@ -1,4 +1,8 @@
+WITH COUNTER AS (
+    SELECT *
+    FROM Categories
+    GROUP BY ItemID
+    HAVING COUNT(*) = 4
+)
 SELECT COUNT(*)
-FROM Categories
-GROUP BY Categories.ItemID
-HAVING COUNT(*) = 4;
+FROM COUNTER;

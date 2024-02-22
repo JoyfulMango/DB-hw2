@@ -1,3 +1,4 @@
 SELECT COUNT(*)
-FROM S Sellers, Users
-:wq
+FROM Sellers S, Users U
+WHERE S.SellerID = U.UserID
+AND U.Rating > 1000;

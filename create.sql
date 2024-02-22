@@ -8,11 +8,11 @@ DROP TABLE IF EXISTS Categories;
 CREATE TABLE Items(
     ItemID INTEGER,
     Name TEXT NOT NULL,
-    Currently TEXT,
-    Buy_Price TEXT,
-    First_Bid TEXT,
+    Currently REAL,
+    Buy_Price REAL,
+    First_Bid REAL,
     Number_of_Bids INTEGER,
-    Started TEXT ,
+    Started TEXT,
     Ends TEXT,
     SellerID INTEGER,
     Description TEXT,
@@ -44,7 +44,7 @@ CREATE TABLE Bids(
     BidderID TEXT,
     ItemID INTEGER,
     Time TEXT,
-    Amount TEXT,
+    Amount REAL,
     PRIMARY KEY (BidderID, ItemID, Amount)
     FOREIGN KEY (BidderID) REFERENCES Bidders,
     FOREIGN KEY (ItemID) REFERENCES Items
