@@ -144,9 +144,7 @@ def parseJson(json_file):
             seller_id = doesExist(sellers, "UserID", "NULL")
             seller_rating = doesExist(sellers, "Rating", "NULL")
 
-            items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}
-                              {buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}
-                              {start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}{columnSeparator}\n""")
+            items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}{buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}{start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}{columnSeparator}\n""")
 
             user = f"{seller_id}{columnSeparator}{seller_rating}\n"
             if not (user in user_exists):
