@@ -74,6 +74,7 @@ def doesExist(obj, key, replace):
 seller_exists = set()
 bidder_exists = set()
 user_exists = set()
+category_exists = set()
 """
 Parses a single json file. Currently, there's a loop that iterates over each
 item in the data set. Your job is to extend this functionality to create all
@@ -92,6 +93,7 @@ def parseJson(json_file):
         global seller_exists
         global bidder_exists
         global user_exists
+        global category_exists
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
         for item in items:
             """
@@ -113,7 +115,11 @@ def parseJson(json_file):
             categories = doesExist(item, "Category", "NULL")
             
             for category in categories:
-                category_table.write(f"{item_id}{columnSeparator}{category}\n")
+                cat = f"{item_id}{columnSeparator}{category}\n"
+                if cat not in category_exists:
+                    category_exists.add(cat)
+                    category_table.write(f"")
+                    
             bids = doesExist(item, "Bids", [])
             for bid in bids:
                 bidder = doesExist(doesExist(bid, "Bid", "NULL"), "Bidder", "NULL")
@@ -144,7 +150,7 @@ def parseJson(json_file):
             seller_id = doesExist(sellers, "UserID", "NULL")
             seller_rating = doesExist(sellers, "Rating", "NULL")
 
-            items_table.write(f"""{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}{buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}{start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}{columnSeparator}\n""")
+            items_table.write(f"{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}{buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}{start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}\n")
 
             user = f"{seller_id}{columnSeparator}{seller_rating}\n"
             if not (user in user_exists):
@@ -156,7 +162,6 @@ def parseJson(json_file):
                 seller_exists.add(seller)
                 sellers_table.write(seller)
     
-    print(len(user_exists))
 
 """
 Loops through each json files provided on the command line and passes each file
