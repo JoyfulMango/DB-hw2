@@ -71,6 +71,11 @@ def doesExist(obj, key, replace):
     get = obj.get(key, replace) if obj.get(key, replace) is not None else replace
     return get
 
+def escapeQuote(text):
+    if '"' in text:
+        return "\"" + text.replace('"', '""') + "\""
+    return text
+
 seller_exists = set()
 bidder_exists = set()
 user_exists = set()
@@ -103,30 +108,31 @@ def parseJson(json_file):
             """
 
             item_id = item["ItemID"]
-            name = doesExist(item, "Name", "NULL").replace('"', '""')
+            name =  escapeQuote(doesExist(item, "Name", "NULL"))
             currently = transformDollar(doesExist(item, "Currently", "NULL"))
             buy_price = transformDollar(doesExist(item, "Buy_Price", "NULL"))
             first_bid = transformDollar(doesExist(item, "First_Bid", "NULL"))
             number_of_bids = doesExist(item, "Number_of_Bids", "NULL")
             start_date = transformDttm(doesExist(item, "Started", "NULL"))
             end_date = transformDttm(doesExist(item, "Ends", "NULL"))
-            description = doesExist(item, "Description", "NULL").replace('"', '""')
+            description = escapeQuote(doesExist(item, "Description", "NULL"))
             
             categories = doesExist(item, "Category", "NULL")
             
             for category in categories:
                 cat = f"{item_id}{columnSeparator}{category}\n"
                 if cat not in category_exists:
+                    cat = escapeQuote(cat)
                     category_exists.add(cat)
                     category_table.write(cat)
                     
             bids = doesExist(item, "Bids", [])
             for bid in bids:
                 bidder = doesExist(doesExist(bid, "Bid", "NULL"), "Bidder", "NULL")
-                bidder_id = doesExist(bidder, "UserID", "NULL")
-                bidder_location = doesExist(bidder, "Location", "NULL").replace('"', '""')
+                bidder_id = escapeQuote(doesExist(bidder, "UserID", "NULL"))
+                bidder_location = escapeQuote(doesExist(bidder, "Location", "NULL"))
                 #print(bidder_id, bidder_location)
-                bidder_country = doesExist(bidder, "Country", "NULL").replace('"', '""')
+                bidder_country = escapeQuote(doesExist(bidder, "Country", "NULL"))
                 bidder_rating = doesExist(bidder, "Rating", "NULL")
 
                 user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
@@ -144,8 +150,8 @@ def parseJson(json_file):
                 bids_table.write(f"{bidder_id}{columnSeparator}{item_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
 
             sellers = doesExist(item, "Seller", "NULL")
-            seller_location = doesExist(item, "Location", "NULL").replace('"', '""')
-            seller_country = doesExist(item, "Country", "NULL").replace('"', '""')
+            seller_location = escapeQuote(doesExist(item, "Location", "NULL"))
+            seller_country = escapeQuote(doesExist(item, "Country", "NULL"))
             
             seller_id = doesExist(sellers, "UserID", "NULL")
             seller_rating = doesExist(sellers, "Rating", "NULL")
