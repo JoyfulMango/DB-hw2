@@ -21,13 +21,13 @@ CREATE TABLE Items(
 );
 
 CREATE TABLE Users(
-    UserID INTEGER,
+    UserID TEXT,
     Rating INTEGER NOT NULL,
     PRIMARY KEY (UserID)
 );
 
 CREATE TABLE Sellers(
-    SellerID INTEGER,
+    SellerID TEXT,
     Location TEXT NOT NULL,
     Country TEXT NOT NULL,
     PRIMARY KEY (SellerID),
@@ -35,7 +35,7 @@ CREATE TABLE Sellers(
 );
 
 CREATE TABLE Bidders(
-    BidderID INTEGER,
+    BidderID TEXT,
     Location TEXT,
     Country TEXT,
     PRIMARY KEY (BidderID),
@@ -43,7 +43,7 @@ CREATE TABLE Bidders(
 );
 
 CREATE TABLE Bids(
-    BidderID INTEGER,
+    BidderID TEXT,
     ItemID INTEGER,
     Time TEXT NOT NULL,
     Amount TEXT,
