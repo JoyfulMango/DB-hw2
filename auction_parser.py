@@ -118,15 +118,15 @@ def parseJson(json_file):
                 cat = f"{item_id}{columnSeparator}{category}\n"
                 if cat not in category_exists:
                     category_exists.add(cat)
-                    category_table.write(f"")
+                    category_table.write(cat)
                     
             bids = doesExist(item, "Bids", [])
             for bid in bids:
                 bidder = doesExist(doesExist(bid, "Bid", "NULL"), "Bidder", "NULL")
                 bidder_id = doesExist(bidder, "UserID", "NULL")
-                bidder_location = doesExist(bidder, "Location", "NULL")
+                bidder_location = doesExist(bidder, "Location", "NULL").replace('"', '""')
                 #print(bidder_id, bidder_location)
-                bidder_country = doesExist(bidder, "Country", "NULL")
+                bidder_country = doesExist(bidder, "Country", "NULL").replace('"', '""')
                 bidder_rating = doesExist(bidder, "Rating", "NULL")
 
                 user = f"{bidder_id}{columnSeparator}{bidder_rating}\n"
@@ -144,8 +144,8 @@ def parseJson(json_file):
                 bids_table.write(f"{bidder_id}{columnSeparator}{item_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
 
             sellers = doesExist(item, "Seller", "NULL")
-            seller_location = doesExist(item, "Location", "NULL")
-            seller_country = doesExist(item, "Country", "NULL")
+            seller_location = doesExist(item, "Location", "NULL").replace('"', '""')
+            seller_country = doesExist(item, "Country", "NULL").replace('"', '""')
             
             seller_id = doesExist(sellers, "UserID", "NULL")
             seller_rating = doesExist(sellers, "Rating", "NULL")
@@ -173,7 +173,6 @@ def main(argv):
         sys.exit(1)
     # loops over all .json files in the argument
     for f in argv[1:]:
-        print(isJson(f))
         if isJson(f):
             parseJson(f)
             print ("Success parsing ", f)
