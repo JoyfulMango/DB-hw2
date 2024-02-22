@@ -1,3 +1,3 @@
 #!/bin/bash
 rm *.dat
-python3 parser.py ebay_data/items-*.json
+python3 auction_parser.py ebay_data/items-*.json
