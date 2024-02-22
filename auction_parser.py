@@ -124,9 +124,9 @@ def parseJson(json_file):
             for bid in bids:
                 bidder = doesExist(doesExist(bid, "Bid", "NULL"), "Bidder", "NULL")
                 bidder_id = doesExist(bidder, "UserID", "NULL")
-                bidder_location = doesExist(bidder, "Location", "NULL")#.replace('"', '""')
+                bidder_location = doesExist(bidder, "Location", "NULL").replace('"', '""')
                 #print(bidder_id, bidder_location)
-                bidder_country = doesExist(bidder, "Country", "NULL")#.replace('"', '""')
+                bidder_country = doesExist(bidder, "Country", "NULL").replace('"', '""')
                 bidder_rating = doesExist(bidder, "Rating", "NULL")
 
                 user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
@@ -144,8 +144,8 @@ def parseJson(json_file):
                 bids_table.write(f"{bidder_id}{columnSeparator}{item_id}{columnSeparator}{bidder_time}{columnSeparator}{bidder_amount}\n")
 
             sellers = doesExist(item, "Seller", "NULL")
-            seller_location = doesExist(item, "Location", "NULL")#.replace('"', '""')
-            seller_country = doesExist(item, "Country", "NULL")#.replace('"', '""')
+            seller_location = doesExist(item, "Location", "NULL").replace('"', '""')
+            seller_country = doesExist(item, "Country", "NULL").replace('"', '""')
             
             seller_id = doesExist(sellers, "UserID", "NULL")
             seller_rating = doesExist(sellers, "Rating", "NULL")
