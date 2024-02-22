@@ -68,7 +68,7 @@ def transformDollar(money):
     return sub(r'[^\d.]', '', money)
 
 def doesExist(obj, key, replace):
-    get = obj.get(key) if obj.get(key, replace) is not None else replace
+    get = obj.get(key, replace) if obj.get(key, replace) is not None else replace
     return get
 
 seller_exists = set()
@@ -129,12 +129,12 @@ def parseJson(json_file):
                 bidder_country = doesExist(bidder, "Country", "NULL").replace('"', '""')
                 bidder_rating = doesExist(bidder, "Rating", "NULL")
 
-                user = f"{bidder_id}{columnSeparator}{bidder_rating}\n"
+                user = f"{bidder_id}{columnSeparator}{bidder_rating}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
                 if not (user in user_exists):
                     user_exists.add(user)
                     users_table.write(user)
 
-                bidder = f"{bidder_id}{columnSeparator}{bidder_location}{columnSeparator}{bidder_country}\n"
+                bidder = f"{bidder_id}\n"
                 if bidder not in bidder_exists:
                     bidder_exists.add(bidder)
                     bidders_table.write(bidder)
@@ -152,12 +152,12 @@ def parseJson(json_file):
 
             items_table.write(f"{item_id}{columnSeparator}{name}{columnSeparator}{currently}{columnSeparator}{buy_price}{columnSeparator}{first_bid}{columnSeparator}{number_of_bids}{columnSeparator}{start_date}{columnSeparator}{end_date}{columnSeparator}{seller_id}{columnSeparator}{description}\n")
 
-            user = f"{seller_id}{columnSeparator}{seller_rating}\n"
+            user = f"{seller_id}{columnSeparator}{seller_rating}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n"
             if not (user in user_exists):
                 user_exists.add(user)
                 users_table.write(user)
 
-            seller = f"{seller_id}{columnSeparator}{seller_location}{columnSeparator}{seller_country}\n"
+            seller = f"{seller_id}\n"
             if seller not in seller_exists:
                 seller_exists.add(seller)
                 sellers_table.write(seller)
