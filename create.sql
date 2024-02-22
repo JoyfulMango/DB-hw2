@@ -8,44 +8,42 @@ DROP TABLE IF EXISTS Categories;
 CREATE TABLE Items(
     ItemID INTEGER,
     Name TEXT NOT NULL,
-    Currently TEXT NOT NULL,
+    Currently TEXT,
     Buy_Price TEXT,
-    First_Bid TEXT NOT NULL,
-    Number_of_Bids INTEGER NOT NULL,
-    Started TEXT NOT NULL,
-    Ends TEXT NOT NULL,
-    SellerID INTEGER NOT NULL,
-    Description TEXT NOT NULL,
+    First_Bid TEXT,
+    Number_of_Bids INTEGER,
+    Started TEXT ,
+    Ends TEXT,
+    SellerID INTEGER,
+    Description TEXT,
     PRIMARY KEY (ItemID),
     FOREIGN KEY (SellerID) REFERENCES Sellers
 );
 
 CREATE TABLE Users(
-    UserID INTEGER,
-    Rating INTEGER NOT NULL,
+    UserID TEXT,
+    Rating INTEGER,
+    Location TEXT,
+    Country TEXT,
     PRIMARY KEY (UserID)
 );
 
 CREATE TABLE Sellers(
-    SellerID INTEGER,
-    Location TEXT NOT NULL,
-    Country TEXT NOT NULL,
+    SellerID TEXT,
     PRIMARY KEY (SellerID),
     FOREIGN KEY (SellerID) REFERENCES Users
 );
 
 CREATE TABLE Bidders(
-    BidderID INTEGER,
-    Location TEXT,
-    Country TEXT,
+    BidderID TEXT,
     PRIMARY KEY (BidderID),
     FOREIGN KEY (BidderID) REFERENCES Users
 );
 
 CREATE TABLE Bids(
-    BidderID INTEGER,
+    BidderID TEXT,
     ItemID INTEGER,
-    Time TEXT NOT NULL,
+    Time TEXT,
     Amount TEXT,
     PRIMARY KEY (BidderID, ItemID, Amount)
     FOREIGN KEY (BidderID) REFERENCES Bidders,
